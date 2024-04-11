@@ -380,7 +380,7 @@ void startScreen() {
   display.fillScreen(ILI9341_BLACK);
   int y;
   if (horizontal != 0) {
-    display.setRotation(3);
+    display.setRotation(1);
     y = 40;
     display.setFont(&FreeSans9pt7b);
     display.setTextSize(2);
@@ -392,7 +392,7 @@ void startScreen() {
     centeredText("Czech maker", ILI9341_WHITE, y + 154);
     centeredText("www.czechmaker.com", ILI9341_WHITE, y + 174);
   } else {
-    display.setRotation(2);
+    display.setRotation(0);
     y = 100;
     display.setFont(&FreeSans9pt7b);
     display.setTextSize(2);
