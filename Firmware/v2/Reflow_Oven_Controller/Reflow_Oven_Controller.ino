@@ -1,6 +1,6 @@
 // ***** INCLUDES *****
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_MAX31856.h>
+#include <Adafruit_MAX31865.h>
 #include "Adafruit_GFX.h"
 #include <Fonts/FreeSans9pt7b.h>
 #include <ArduinoJson.h>
@@ -18,14 +18,13 @@
 
 HTTPClient http;
 
-// Use software SPI: CS, DI, DO, CLK
-//Adafruit_MAX31856 max = Adafruit_MAX31856(max_cs, max_di, max_do, max_clk);
-// use hardware SPI, just pass in the CS pin
-Adafruit_MAX31856 max31856 = Adafruit_MAX31856(max_cs);
 
 // Use hardware SPI
 Adafruit_ILI9341 display = Adafruit_ILI9341(display_cs, display_dc, display_rst);
 //Adafruit_ILI9341 display = Adafruit_ILI9341(display_cs, display_dc, display_mosi, display_sclk, display_rst);
+
+Adafruit_MAX31865 max31865 = Adafruit_MAX31865(13);
+
 
 #define FORMAT_SPIFFS_IF_FAILED true
 
@@ -204,8 +203,8 @@ void setup() {
     }
   }
 
-  max31856.begin();
-  max31856.setThermocoupleType(MAX31856_TCTYPE_K);
+  
+  max31865.begin(MAX31865_2WIRE);
 
   // Set window size
   windowSize = 2000;

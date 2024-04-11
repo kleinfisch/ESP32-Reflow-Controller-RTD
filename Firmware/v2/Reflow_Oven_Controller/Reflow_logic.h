@@ -1,6 +1,6 @@
 #include <PID_v1.h>
 
-extern Adafruit_MAX31856 max31856;
+extern Adafruit_MAX31865 max31865;
 extern Button AXIS_X;
 extern Button AXIS_Y;
 
@@ -212,19 +212,17 @@ void reflow_main() {
     nextRead += SENSOR_SAMPLING_TIME;
     // Read current temperature
 
-    input = max31856.readThermocoupleTemperature();
+    input = max31865.temperature(100.0, 430.0);
     // Check and print any faults
-    uint8_t fault = max31856.readFault();
+    uint8_t fault = max31865.readFault();
     if (fault) {
-      if (fault & MAX31856_FAULT_CJRANGE) //Serial.println("Cold Junction Range Fault");
-        if (fault & MAX31856_FAULT_TCRANGE) //Serial.println("Thermocouple Range Fault");
-          if (fault & MAX31856_FAULT_CJHIGH)  //Serial.println("Cold Junction High Fault");
-            if (fault & MAX31856_FAULT_CJLOW)   //Serial.println("Cold Junction Low Fault");
-              if (fault & MAX31856_FAULT_TCHIGH)  //Serial.println("Thermocouple High Fault");
-                if (fault & MAX31856_FAULT_TCLOW)   //Serial.println("Thermocouple Low Fault");
-                  if (fault & MAX31856_FAULT_OVUV)    //Serial.println("Over/Under Voltage Fault");
-                    if (fault & MAX31856_FAULT_OPEN)    //Serial.println("Thermocouple Open Fault");
-                      isFault = 1;
+      if (fault & MAX31865_FAULT_HIGHTHRESH) //Serial.println("Cold Junction Range Fault");
+        if (fault & MAX31865_FAULT_LOWTHRESH) //Serial.println("Thermocouple Range Fault");
+          if (fault & MAX31865_FAULT_REFINLOW)  //Serial.println("Cold Junction High Fault");
+            if (fault & MAX31865_FAULT_REFINHIGH)   //Serial.println("Cold Junction Low Fault");
+              if (fault & MAX31865_FAULT_RTDINLOW)  //Serial.println("Thermocouple High Fault");
+                if (fault & MAX31865_FAULT_OVUV)   //Serial.println("Thermocouple Low Fault");
+                  isFault = 1;
     }
     inputInt = input / 1;
 
@@ -241,7 +239,7 @@ void reflow_main() {
 #endif
     }
     // If thermocouple problem detected
-    if (input == MAX31856_FAULT_CJRANGE) {
+    if (isFault == 1) {
       // Illegal operation
       reflowState = REFLOW_STATE_ERROR;
       reflowStatus = REFLOW_STATUS_OFF;
@@ -411,7 +409,7 @@ void reflow_main() {
     case REFLOW_STATE_ERROR:
       // If thermocouple problem is still present
 
-      if (input == MAX31856_FAULT_CJRANGE)// || (input == FAULT_SHORT_GND) ||
+      if (isFault == 1)// || (input == FAULT_SHORT_GND) ||
         //          (input == FAULT_SHORT_VCC))
       {
         // Wait until thermocouple wire is connected
